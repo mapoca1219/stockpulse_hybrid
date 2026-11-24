@@ -1,0 +1,37 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "stockpulse-hybrid-2026",
+          "appId": "1:350299627217:android:700a078c9fec176ff0eff0",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "stockpulse-hybrid-2026",
+          "configurations": {
+            "android": "1:350299627217:android:700a078c9fec176ff0eff0",
+            "ios": "1:350299627217:ios:e3c1a110a9e70277f0eff0",
+            "web": "1:350299627217:web:8bf88fe2371d461bf0eff0"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
