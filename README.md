@@ -1,7 +1,9 @@
 # StockPulse Hybrid
 
 > **Offline-First AI Retail & Warehouse Operations Copilot**  
-> Built for the **#BuildHybridAI 2026 Hackathon**
+> Built for the **#BuildHybridAI 2026 Hackathon**  
+> **Live Demo:** [https://stockpulse-hybrid-2026.web.app/](https://stockpulse-hybrid-2026.web.app/)  
+> **Source Code:** [https://github.com/mapoca1219/stockpulse_hybrid](https://github.com/mapoca1219/stockpulse_hybrid)
 
 ---
 
@@ -89,13 +91,16 @@ Modern warehouse and retail distribution centers suffer from dead zones, steel r
 
 ## 4. Visual Design System
 
-Built with a modern **Neo-Bento Dark & Electric Lime/Coral** aesthetic:
-- **Deep Obsidian Base**: `#0B0E14`
-- **Elevated Bento Cards**: `#141923` with `#242C3D` borders
-- **Primary Accent (On-Device / Nano)**: `#C6FF00` (Electric Cyber Lime)
-- **Secondary Accent (Cloud / Alerts)**: `#FF5A36` (Sunset Coral)
-- **Tertiary Accent (Telemetry)**: `#00E5FF` (Electric Cyan)
-- **Typography**: `Space Grotesk` (headings), `Plus Jakarta Sans` (body), `JetBrains Mono` (telemetry).
+Built with a high-readability **Swiss Editorial & Ultra-Contrast Industrial** aesthetic (inspired by Teenage Engineering / Linear / Stripe):
+- **Technical Paper Gray Canvas**: `#F4F5F7`
+- **Pure White Bento Cards**: `#FFFFFF` with crisp `1.5px solid #111827` borders and subtle offset shadow
+- **Primary Text**: `#090D16` (Deep Ink Black, high contrast)
+- **Secondary Text / Subtitles**: `#374151` (Dark Slate Gray)
+- **On-Device / Edge Accent (Gemini Nano)**: `#0055FF` (Electric Cobalt Blue)
+- **Cloud AI / Complex Reasoning Accent (Gemini 2.5 Flash)**: `#FF4500` (International Orange / Vivid Vermilion)
+- **Healthy / Live Online State**: `#059669` (Emerald Green on `#ECFDF5`)
+- **Simulated Offline State**: `#FEF3C7` warning banner with `#D97706` border and `#92400E` text
+- **Vector Logo (`StockPulseLogo`)**: Custom-painted isometric cube divided into Cobalt Blue (Edge) and International Orange (Cloud), bisected by a dynamic heartbeat/telemetry pulse wave.
 
 ---
 
