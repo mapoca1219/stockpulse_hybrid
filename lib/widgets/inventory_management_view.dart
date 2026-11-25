@@ -82,8 +82,8 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
                           child: Text(
                             item.sku,
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: AppColors.cyberLime,
-                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.cobaltBlue,
+                                  fontWeight: FontWeight.w800,
                                 ),
                           ),
                         ),
@@ -240,7 +240,7 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
                               Text(
                                 '$currentStock units',
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                      color: currentStock <= item.minimumThreshold ? AppColors.sunsetCoral : AppColors.cyberLime,
+                                      color: currentStock <= item.minimumThreshold ? AppColors.internationalOrange : AppColors.emeraldGreen,
                                     ),
                               ),
                             ],
@@ -303,7 +303,7 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
                               children: [
                                 Text('Margin Spread', style: Theme.of(context).textTheme.bodySmall),
                                 const SizedBox(height: 2),
-                                Text('${marginPct.toStringAsFixed(1)}%', style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppColors.cyberLime)),
+                                Text('${marginPct.toStringAsFixed(1)}%', style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppColors.emeraldGreen)),
                               ],
                             ),
                           ),
@@ -362,59 +362,306 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
   }
 
   void _showAddDialog(BuildContext context) {
-    final skuCtrl = TextEditingController();
-    final nameCtrl = TextEditingController();
-    final stockCtrl = TextEditingController(text: '20');
-    final costCtrl = TextEditingController(text: '35.00');
-    final retailCtrl = TextEditingController(text: '79.99');
+    final skuCtrl = TextEditingController(text: 'TR-X11');
+    final nameCtrl = TextEditingController(text: 'Trail Runner Pro X11');
+    final stockCtrl = TextEditingController(text: '35');
+    final costCtrl = TextEditingController(text: '48.50');
+    final retailCtrl = TextEditingController(text: '129.99');
+    final thresholdCtrl = TextEditingController(text: '8');
+    final locationCtrl = TextEditingController(text: 'Bay B-04');
+    String selectedCategory = 'Footwear';
+    String? validationError;
+
+    final categories = [
+      'Footwear',
+      'Warehouse Equipment',
+      'Electronics & Tools',
+      'Packaging Supplies',
+      'Safety & PPE',
+      'General Catalog',
+    ];
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text('Add Inventory SKU', style: Theme.of(context).textTheme.displaySmall),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(controller: skuCtrl, decoration: const InputDecoration(labelText: 'SKU Code (e.g. TR-X10)')),
-            const SizedBox(height: 10),
-            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Product Name')),
-            const SizedBox(height: 10),
-            TextField(controller: stockCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Initial Stock Quantity')),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(child: TextField(controller: costCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Cost Price (\$)'))),
-                const SizedBox(width: 10),
-                Expanded(child: TextField(controller: retailCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Retail Price (\$)'))),
-              ],
+      builder: (ctx) => StatefulBuilder(
+        builder: (dialogCtx, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: AppColors.border, width: 1.5),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.cobaltBlue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Icon(Icons.inventory_2_rounded, color: AppColors.cobaltBlue, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Text('Add Inventory SKU', style: Theme.of(context).textTheme.headlineMedium),
+            ],
+          ),
+          content: SizedBox(
+            width: 480,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Quick Presets (1-Click Fill):',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      ActionChip(
+                        label: const Text('Shoes (TR-X11)'),
+                        onPressed: () {
+                          setDialogState(() {
+                            skuCtrl.text = 'TR-X11';
+                            nameCtrl.text = 'Trail Runner Pro X11 All-Terrain';
+                            selectedCategory = 'Footwear';
+                            stockCtrl.text = '35';
+                            costCtrl.text = '48.50';
+                            retailCtrl.text = '129.99';
+                            thresholdCtrl.text = '8';
+                            locationCtrl.text = 'Bay B-04';
+                            validationError = null;
+                          });
+                        },
+                      ),
+                      ActionChip(
+                        label: const Text('Gloves (GLV-NIT-L)'),
+                        onPressed: () {
+                          setDialogState(() {
+                            skuCtrl.text = 'GLV-NIT-L';
+                            nameCtrl.text = 'Heavy-Duty Nitrile Industrial Gloves';
+                            selectedCategory = 'Safety & PPE';
+                            stockCtrl.text = '120';
+                            costCtrl.text = '4.20';
+                            retailCtrl.text = '12.50';
+                            thresholdCtrl.text = '25';
+                            locationCtrl.text = 'Safety Locker 3';
+                            validationError = null;
+                          });
+                        },
+                      ),
+                      ActionChip(
+                        label: const Text('Tape (KRAFT-50M)'),
+                        onPressed: () {
+                          setDialogState(() {
+                            skuCtrl.text = 'KRAFT-50M';
+                            nameCtrl.text = 'Reinforced Water-Activated Kraft Tape';
+                            selectedCategory = 'Packaging Supplies';
+                            stockCtrl.text = '75';
+                            costCtrl.text = '8.90';
+                            retailCtrl.text = '21.00';
+                            thresholdCtrl.text = '15';
+                            locationCtrl.text = 'Aisle 04-Rack C';
+                            validationError = null;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  if (validationError != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.internationalOrange.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: AppColors.internationalOrange),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.error_outline_rounded, color: AppColors.internationalOrange, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              validationError!,
+                              style: const TextStyle(color: AppColors.internationalOrange, fontSize: 12, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          controller: skuCtrl,
+                          textCapitalization: TextCapitalization.characters,
+                          decoration: const InputDecoration(
+                            labelText: 'SKU Code *',
+                            hintText: 'e.g. TR-X11',
+                          ),
+                          onChanged: (_) {
+                            if (validationError != null) setDialogState(() => validationError = null);
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 3,
+                        child: DropdownButtonFormField<String>(
+                          initialValue: selectedCategory,
+                          decoration: const InputDecoration(labelText: 'Category'),
+                          items: categories.map((cat) => DropdownMenuItem(value: cat, child: Text(cat, style: const TextStyle(fontSize: 13)))).toList(),
+                          onChanged: (val) {
+                            if (val != null) setDialogState(() => selectedCategory = val);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: nameCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Product Name *',
+                      hintText: 'e.g. Trail Runner Pro X11',
+                    ),
+                    onChanged: (_) {
+                      if (validationError != null) setDialogState(() => validationError = null);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: stockCtrl,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(labelText: 'Initial Units *'),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: thresholdCtrl,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(labelText: 'Safety Min *'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: costCtrl,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: const InputDecoration(labelText: 'Unit Cost (\$)'),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: retailCtrl,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: const InputDecoration(labelText: 'Retail Price (\$)'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: locationCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Warehouse Bay Location',
+                      hintText: 'e.g. Bay B-04 / Aisle 02',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add_task_rounded, size: 16),
+              label: const Text('Ingest & Save SKU'),
+              onPressed: () async {
+                final sku = skuCtrl.text.trim().toUpperCase();
+                final name = nameCtrl.text.trim();
+
+                if (sku.isEmpty || name.isEmpty) {
+                  setDialogState(() {
+                    validationError = 'Please provide both SKU Code and Product Name.';
+                  });
+                  return;
+                }
+
+                final stock = int.tryParse(stockCtrl.text.trim()) ?? 10;
+                final threshold = int.tryParse(thresholdCtrl.text.trim()) ?? 5;
+                final cost = double.tryParse(costCtrl.text.trim()) ?? 25.0;
+                final retail = double.tryParse(retailCtrl.text.trim()) ?? (cost * 1.6);
+                final bay = locationCtrl.text.trim().isNotEmpty ? locationCtrl.text.trim() : 'General Bay';
+
+                final newItem = InventoryItem(
+                  id: 'inv-${DateTime.now().millisecondsSinceEpoch}',
+                  sku: sku,
+                  name: name,
+                  category: selectedCategory,
+                  currentStock: stock,
+                  minimumThreshold: threshold,
+                  costPrice: cost,
+                  retailPrice: retail,
+                  locationBay: bay,
+                  lastScannedAt: DateTime.now(),
+                );
+
+                final repo = context.read<InventoryRepository>();
+                final navigator = Navigator.of(ctx);
+                final messenger = ScaffoldMessenger.of(context);
+
+                await repo.addItem(newItem);
+
+                if (mounted) {
+                  setState(() => _filterQuery = '');
+                  navigator.pop();
+                  messenger.showSnackBar(
+                    SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: AppColors.surface,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: const BorderSide(color: AppColors.emeraldGreen, width: 1.5),
+                      ),
+                      content: Row(
+                        children: [
+                          const Icon(Icons.check_circle_rounded, color: AppColors.emeraldGreen, size: 20),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Ingested SKU [$sku] "$name" ($stock units) into live catalog!',
+                              style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ],
+                      ),
+                      duration: const Duration(seconds: 4),
+                    ),
+                  );
+                }
+              },
             ),
           ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              if (skuCtrl.text.isNotEmpty && nameCtrl.text.isNotEmpty) {
-                context.read<InventoryRepository>().addItem(
-                      InventoryItem(
-                        id: 'inv-${DateTime.now().millisecondsSinceEpoch}',
-                        sku: skuCtrl.text.trim().toUpperCase(),
-                        name: nameCtrl.text.trim(),
-                        category: 'General Catalog',
-                        currentStock: int.tryParse(stockCtrl.text) ?? 10,
-                        minimumThreshold: 5,
-                        costPrice: double.tryParse(costCtrl.text) ?? 20.0,
-                        retailPrice: double.tryParse(retailCtrl.text) ?? 49.99,
-                        lastScannedAt: DateTime.now(),
-                      ),
-                    );
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text('Add SKU'),
-          ),
-        ],
       ),
     );
   }

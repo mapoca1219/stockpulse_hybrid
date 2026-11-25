@@ -80,11 +80,11 @@ class _ScannerViewState extends State<ScannerView> {
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
-            side: const BorderSide(color: AppColors.cyberLime),
+            side: const BorderSide(color: AppColors.emeraldGreen, width: 1.5),
           ),
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded, color: AppColors.cyberLime, size: 20),
+              const Icon(Icons.check_circle_rounded, color: AppColors.emeraldGreen, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -219,7 +219,7 @@ class _ScannerViewState extends State<ScannerView> {
                     children: [
                       Text(
                         _latestResult!.title,
-                        style: Theme.of(context).textTheme.displaySmall?.copyWith(color: AppColors.cyberLime),
+                        style: Theme.of(context).textTheme.displaySmall?.copyWith(color: AppColors.cobaltBlue),
                       ),
                       Wrap(
                         spacing: 8,

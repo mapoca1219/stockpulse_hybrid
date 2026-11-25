@@ -158,7 +158,10 @@ class HybridInferenceEngine extends ChangeNotifier {
 
       // Extract SKU
       String extractedSku = 'TR-X9';
-      if (lower.contains('trail runner') || lower.contains('tr-x9')) {
+      final explicitSkuMatch = RegExp(r'(?:sku\s*[:#]?\s*|de\s+|of\s+)([A-Za-z0-9_-]{3,})', caseSensitive: false).firstMatch(command);
+      if (explicitSkuMatch != null && !['UNIDADES', 'UNITS', 'PIEZAS', 'PCS', 'BOXES', 'ITEMS', 'CAJAS', 'SKU'].contains(explicitSkuMatch.group(1)!.toUpperCase())) {
+        extractedSku = explicitSkuMatch.group(1)!.toUpperCase();
+      } else if (lower.contains('trail runner') || lower.contains('tr-x9')) {
         extractedSku = 'TR-X9';
       } else if (lower.contains('pallet jack') || lower.contains('al-pro')) {
         extractedSku = 'AL-PRO-10';
@@ -168,9 +171,18 @@ class HybridInferenceEngine extends ChangeNotifier {
         extractedSku = 'TLR-4X6-24';
       } else if (lower.contains('vest') || lower.contains('chaleco') || lower.contains('hv-vest')) {
         extractedSku = 'HV-VEST-O';
+      } else if (lower.contains('glove') || lower.contains('guante') || lower.contains('glv-nit')) {
+        extractedSku = 'GLV-NIT-L';
+      } else if (lower.contains('strap') || lower.contains('hd-strap')) {
+        extractedSku = 'HD-STRAP-50';
       } else {
         final words = command.split(' ');
-        extractedSku = words.firstWhere((w) => w.length >= 3 && w.contains(RegExp(r'[A-Z0-9]')), orElse: () => 'TR-X9');
+        extractedSku = words.firstWhere((w) {
+          final upper = w.toUpperCase();
+          return w.length >= 3 &&
+              w.contains(RegExp(r'[A-Z0-9]')) &&
+              !['ADD', 'LOG', 'UNITS', 'UNIT', 'PCS', 'BOXES', 'ITEMS', 'REGISTRAR', 'AGREGAR', 'REPONER', 'INGRESAR', 'SUMAR', 'UNIDADES', 'PIEZAS', 'CAJAS'].contains(upper);
+        }, orElse: () => 'TR-X9');
       }
 
       final thresholdMatch = RegExp(r'(below|debajo de|menor a|umbral|bajo)\s*(\d+)', caseSensitive: false).firstMatch(command);
@@ -469,25 +481,40 @@ class HybridInferenceEngine extends ChangeNotifier {
     final lines = text.split('\n');
 
     for (final line in lines) {
-      if (line.contains('SKU:')) {
-        final skuMatch = RegExp(r'SKU:\s*([A-Za-z0-9_-]+)', caseSensitive: false).firstMatch(line);
-        final sku = skuMatch?.group(1) ?? 'SKU-EXTRACTED';
+      if (line.toUpperCase().contains('SKU')) {
+        final skuMatch = RegExp(r'SKU[:\s#]+([A-Za-z0-9_-]+)', caseSensitive: false).firstMatch(line);
+        if (skuMatch != null) {
+          final sku = skuMatch.group(1)!;
 
-        String name = 'Warehouse Product $sku';
-        if (line.contains('|')) {
-          final parts = line.split('|');
-          if (parts.length > 1) {
-            name = parts[1].trim();
+          String name = 'Warehouse Item $sku';
+          if (line.contains('|')) {
+            final parts = line.split('|');
+            if (parts.length > 1) {
+              name = parts[1].trim();
+            }
+          } else if (line.contains('-')) {
+            name = line.replaceAll(RegExp(r'^[-\s*•]+'), '').trim();
           }
-        }
 
-        results.add(ExtractedSkuEntry(
-          sku: sku,
-          name: name,
-          quantity: 25,
-          unitCost: 46.80,
-          conditionNotes: line.contains('seal') ? 'Outer seal inspection required' : null,
-        ));
+          int qty = 25;
+          final qtyMatch = RegExp(r'(?:Counted|Quantity|Qty)[:\s]*(\d+)', caseSensitive: false).firstMatch(line);
+          if (qtyMatch != null) {
+            qty = int.tryParse(qtyMatch.group(1)!) ?? 25;
+          } else {
+            final standaloneQty = RegExp(r'(\d+)\s*(?:rolls|pairs|units|crates|boxes|packs)', caseSensitive: false).firstMatch(line);
+            if (standaloneQty != null) {
+              qty = int.tryParse(standaloneQty.group(1)!) ?? 25;
+            }
+          }
+
+          results.add(ExtractedSkuEntry(
+            sku: sku,
+            name: name,
+            quantity: qty,
+            unitCost: 28.50,
+            conditionNotes: line.contains('seal') || line.contains('unscannable') ? 'Requires manual tag verification' : null,
+          ));
+        }
       }
     }
 
