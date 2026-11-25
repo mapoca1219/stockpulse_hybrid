@@ -62,7 +62,7 @@ class JudgeInspectorModal extends StatelessWidget {
                     Text('Firebase Integration Telemetry', style: Theme.of(context).textTheme.headlineSmall),
                     const SizedBox(height: 12),
                     _buildStatusRow(context, 'App Check Status', fbConfig.isAppCheckActive ? 'ACTIVE (WebDebugProvider / AndroidDebugProvider)' : 'INACTIVE', AppColors.emeraldGreen),
-                    _buildStatusRow(context, 'Debug Token', fbConfig.appCheckDebugToken ?? 'SP-DEBUG-TOKEN-2026-NANO4-EVAL', AppColors.cobaltBlue),
+                    _buildStatusRow(context, 'Debug Token', fbConfig.appCheckDebugToken ?? 'AE40B6BC-940A-4EE5-9F98-15879A6A7C86', AppColors.cobaltBlue),
                     _buildStatusRow(
                       context,
                       'Authentication',

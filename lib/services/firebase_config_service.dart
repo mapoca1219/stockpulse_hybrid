@@ -50,17 +50,17 @@ class FirebaseConfigService extends ChangeNotifier {
       try {
         await FirebaseAppCheck.instance.activate(
           providerWeb: WebDebugProvider(
-            debugToken: 'SP-DEBUG-TOKEN-2026-NANO4-EVAL',
+            debugToken: 'AE40B6BC-940A-4EE5-9F98-15879A6A7C86',
           ),
           providerAndroid: const AndroidDebugProvider(),
           providerApple: const AppleDebugProvider(),
         );
         _isAppCheckActive = true;
-        _appCheckDebugToken = 'SP-DEBUG-TOKEN-2026-NANO4-EVAL';
+        _appCheckDebugToken = 'AE40B6BC-940A-4EE5-9F98-15879A6A7C86';
       } catch (e) {
         debugPrint('[AppCheck] Note on App Check activation: $e');
         _isAppCheckActive = true;
-        _appCheckDebugToken = 'LOCAL-DEBUG-FALLBACK-TOKEN';
+        _appCheckDebugToken = 'AE40B6BC-940A-4EE5-9F98-15879A6A7C86';
       }
 
       // 4. Initialize Remote Config
