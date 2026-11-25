@@ -66,27 +66,50 @@ class FirebaseConfigService extends ChangeNotifier {
       // 4. Initialize Remote Config
       await RemoteConfigService().initialize();
 
-      // 5. Authenticate anonymously for seamless zero-barrier judge access
+      // 5. Authenticate for zero-barrier judge access
       try {
         final auth = FirebaseAuth.instance;
-        UserCredential credential;
-        if (auth.currentUser == null) {
-          credential = await auth.signInAnonymously();
-        } else {
-          credential = UserCredentialMock(auth.currentUser!);
+        User? user = auth.currentUser;
+
+        // If there's a cached user in browser IndexedDB, verify whether its token is valid.
+        // If the token cannot be refreshed (e.g. Identity Toolkit not yet enabled in console),
+        // sign out immediately so token_manager doesn't trigger a 403 loop with securetoken:
+        if (user != null) {
+          try {
+            await user.getIdToken(false);
+          } catch (e) {
+            debugPrint('[FirebaseAuth] Clearing invalid session: $e');
+            await auth.signOut().catchError((_) {});
+            user = null;
+          }
         }
-        _userId = credential.user?.uid ?? 'anon-judge-2026';
-        _isAnonymousAuth = true;
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'configuration-not-found') {
-          debugPrint('[FirebaseAuth] Anonymous Sign-In is pending activation in Firebase Console. Operating seamlessly with Judge Sandbox session.');
-        } else {
-          debugPrint('[FirebaseAuth] Auth notice: ${e.code} - ${e.message}');
+
+        if (user == null) {
+          try {
+            final credential = await auth.signInAnonymously();
+            user = credential.user;
+          } on FirebaseAuthException catch (e) {
+            if (e.code == 'configuration-not-found' || e.code == 'admin-restricted-operation') {
+              debugPrint('[FirebaseAuth] Anonymous Sign-In is pending activation in Firebase Console. Operating in Judge Sandbox session.');
+            } else {
+              debugPrint('[FirebaseAuth] Auth notice: ${e.code} - ${e.message}');
+            }
+            await auth.signOut().catchError((_) {});
+          } catch (e) {
+            debugPrint('[FirebaseAuth] Anonymous sign-in fallback: $e');
+            await auth.signOut().catchError((_) {});
+          }
         }
-        _userId = 'anon-judge-sandbox-session';
-        _isAnonymousAuth = true;
+
+        if (user != null) {
+          _userId = user.uid;
+          _isAnonymousAuth = user.isAnonymous;
+        } else {
+          _userId = 'anon-judge-sandbox-session';
+          _isAnonymousAuth = true;
+        }
       } catch (e) {
-        debugPrint('[FirebaseAuth] Anonymous sign-in fallback: $e');
+        debugPrint('[FirebaseAuth] Session fallback: $e');
         _userId = 'anon-judge-sandbox-session';
         _isAnonymousAuth = true;
       }
@@ -135,6 +158,7 @@ class FirebaseConfigService extends ChangeNotifier {
       _isAnonymousAuth = true;
       notifyListeners();
     } catch (e) {
+      await FirebaseAuth.instance.signOut().catchError((_) {});
       _userId = 'anon-judge-${DateTime.now().millisecondsSinceEpoch % 10000}';
       _userEmail = null;
       _isAnonymousAuth = true;
