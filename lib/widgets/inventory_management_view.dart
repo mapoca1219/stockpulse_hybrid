@@ -362,13 +362,13 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
   }
 
   void _showAddDialog(BuildContext context) {
-    final skuCtrl = TextEditingController(text: 'TR-X11');
-    final nameCtrl = TextEditingController(text: 'Trail Runner Pro X11');
-    final stockCtrl = TextEditingController(text: '35');
-    final costCtrl = TextEditingController(text: '48.50');
-    final retailCtrl = TextEditingController(text: '129.99');
-    final thresholdCtrl = TextEditingController(text: '8');
-    final locationCtrl = TextEditingController(text: 'Bay B-04');
+    final skuCtrl = TextEditingController();
+    final nameCtrl = TextEditingController();
+    final stockCtrl = TextEditingController(text: '20');
+    final costCtrl = TextEditingController(text: '35.00');
+    final retailCtrl = TextEditingController(text: '79.99');
+    final thresholdCtrl = TextEditingController(text: '5');
+    final locationCtrl = TextEditingController(text: 'Bay B-01');
     String selectedCategory = 'Footwear';
     String? validationError;
 
@@ -473,26 +473,30 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
                   const SizedBox(height: 16),
                   if (validationError != null) ...[
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: AppColors.internationalOrange.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: AppColors.internationalOrange),
+                        color: const Color(0x1AFF4500),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFFF4500), width: 1.5),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.error_outline_rounded, color: AppColors.internationalOrange, size: 16),
-                          const SizedBox(width: 8),
+                          const Icon(Icons.warning_amber_rounded, color: Color(0xFFFF4500), size: 18),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               validationError!,
-                              style: const TextStyle(color: AppColors.internationalOrange, fontSize: 12, fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                color: Color(0xFFFF4500),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                   ],
                   Row(
                     children: [
@@ -501,9 +505,23 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
                         child: TextField(
                           controller: skuCtrl,
                           textCapitalization: TextCapitalization.characters,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'SKU Code *',
                             hintText: 'e.g. TR-X11',
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: validationError != null && skuCtrl.text.trim().isEmpty ? const Color(0xFFFF4500) : AppColors.cobaltBlue,
+                                width: 2.0,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: validationError != null && skuCtrl.text.trim().isEmpty ? const Color(0xFFFF4500) : AppColors.border,
+                                width: 1.5,
+                              ),
+                            ),
                           ),
                           onChanged: (_) {
                             if (validationError != null) setDialogState(() => validationError = null);
@@ -527,9 +545,23 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: nameCtrl,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Product Name *',
                       hintText: 'e.g. Trail Runner Pro X11',
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: validationError != null && nameCtrl.text.trim().isEmpty ? const Color(0xFFFF4500) : AppColors.cobaltBlue,
+                          width: 2.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: validationError != null && nameCtrl.text.trim().isEmpty ? const Color(0xFFFF4500) : AppColors.border,
+                          width: 1.5,
+                        ),
+                      ),
                     ),
                     onChanged: (_) {
                       if (validationError != null) setDialogState(() => validationError = null);
@@ -593,15 +625,15 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
               child: const Text('Cancel'),
             ),
             ElevatedButton.icon(
-              icon: const Icon(Icons.add_task_rounded, size: 16),
-              label: const Text('Ingest & Save SKU'),
+              icon: const Icon(Icons.add_rounded, size: 16),
+              label: const Text('Add SKU'),
               onPressed: () async {
                 final sku = skuCtrl.text.trim().toUpperCase();
                 final name = nameCtrl.text.trim();
 
                 if (sku.isEmpty || name.isEmpty) {
                   setDialogState(() {
-                    validationError = 'Please provide both SKU Code and Product Name.';
+                    validationError = 'SKU Code and Product Name are required';
                   });
                   return;
                 }
@@ -629,11 +661,14 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
                 final navigator = Navigator.of(ctx);
                 final messenger = ScaffoldMessenger.of(context);
 
+                // Close modal instantly
+                navigator.pop();
+
+                // Add to inventory & persist
                 await repo.addItem(newItem);
 
                 if (mounted) {
                   setState(() => _filterQuery = '');
-                  navigator.pop();
                   messenger.showSnackBar(
                     SnackBar(
                       behavior: SnackBarBehavior.floating,
@@ -646,10 +681,10 @@ class _InventoryManagementViewState extends State<InventoryManagementView> {
                         children: [
                           const Icon(Icons.check_circle_rounded, color: AppColors.emeraldGreen, size: 20),
                           const SizedBox(width: 10),
-                          Expanded(
+                          const Expanded(
                             child: Text(
-                              'Ingested SKU [$sku] "$name" ($stock units) into live catalog!',
-                              style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w700),
+                              'SKU added to Firestore & offline cache',
+                              style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w700),
                             ),
                           ),
                         ],
